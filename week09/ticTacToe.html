@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .cell {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+      vertical-align: middle;
+      border: 1px solid white;
+      background-color: green;
+      font-size: 50px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+
+  <script>
+    let pattern = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ]
+    let color = 1
+    let isGameOver = false
+
+    const board = document.getElementById('board')
+    const fragment = document.createDocumentFragment()
+
+    board.addEventListener('click', (event) => {
+      if (isGameOver) {
+        return
+      }
+      const target = event.target
+      if (target.nodeType === 1 && target.classList.contains('cell')) {
+        const x = target.dataset.x
+        const y = target.dataset.y
+        move(x, y) 
+      }
+    }, false)
+
+    function show() {
+      board.innerHTML = ''
+      for (let i = 0; i < pattern.length; i++) {
+        for (let j = 0; j < pattern[i].length; j++) {
+          const item = document.createElement('div')
+          item.classList.add('cell')
+          item.setAttribute('data-x', j)
+          item.setAttribute('data-y', i)
+          item.innerHTML = pattern[i][j] === 2 ? 'x' :
+                           pattern[i][j] === 1 ? 'o' : ''
+          fragment.appendChild(item)
+        }
+        fragment.appendChild(document.createElement('br'))
+      }
+      board.appendChild(fragment)
+    }
+    
+    function move(x, y) {
+      pattern[y][x] = color
+      show()
+
+      if (check(pattern, color)) {
+        alert(`${color === 2 ? 'x' : 'o'} is winner`)
+        isGameOver = true
+        console.log('game over')
+      }
+
+      color = 3 - color
+
+      if (!isGameOver) {
+        if (willWin(pattern, color)) {
+          alert(`${color === 2 ? 'x' : 'o' } will win`)
+        }
+        if (color === 2) {
+          const point = betterChoice(pattern, color).point
+          if (point) {
+            setTimeout(() => {
+              move(point[0], point[1])
+            }, 500)
+          } else {
+            alert('和棋')
+            console.log('game over')
+          }
+        }
+      }
+    }
+
+    function check(pattern, color) {
+      const row = pattern.length
+      const col = pattern[0].length
+
+      for (let i = 0; i < row; i++) {
+        let win = true
+        for (let j = 0; j < col; j++) {
+          if (pattern[i][j] !== color) {
+            win = false
+          }
+        }
+        if (win) {
+          return true
+        }
+      }
+
+      for (let i = 0; i < row; i++) {
+        let win = true
+        for (let j = 0; j < col; j++) {
+          if (pattern[j][i] !== color) {
+            win = false
+          } 
+        }
+        if (win) {
+          return true
+        }
+      }
+      
+      {
+        let win = true
+        for (let i = 0; i < row; i++) {
+          if (pattern[i][i] !== color) {
+            win = false
+          }
+        }
+        if (win) {
+          return true
+        }
+      }
+
+      {
+        let win = true
+        for (let i = 0; i < row; i ++) {
+          if (pattern[i][2 - i] !== color) {
+            win = false
+          }
+        }
+        if (win) {
+          return true
+        }
+      }
+
+      return false
+    }
+
+    function willWin(pattern, color) {
+      for (let i = 0; i < pattern.length; i++) {
+        for (let j = 0; j < pattern[i].length; j++) {
+          if (pattern[i][j] === 0) {
+            const tmp = clone(pattern)
+            tmp[i][j] = color
+            if (check(tmp, color)) {
+              return [j, i]
+            }
+          }
+        }
+      }
+      return null
+    }
+
+    function betterChoice(pattern, color) {
+      let p = willWin(pattern, color)
+      if (p) {
+        return {
+          result: 1,
+          point: p
+        }
+      }
+
+      let result = -2
+      let point = null
+
+      for (let i = 0; i < pattern.length; i++) {
+        for (let j = 0; j < pattern[i].length; j++) {
+          if (pattern[i][j] === 0) {
+            const tmp = clone(pattern)
+            tmp[i][j] = color
+            const r = betterChoice(tmp, 3 - color).result
+            // 对方最好的结果就是我方最差的结果，所以我方的结果是 -r
+            if (-r > result) {
+              result = -r
+              point = [j, i]
+            }
+          }
+        }
+      }
+
+      return {
+        result: point ? result : 0,
+        point
+      }
+    }
+
+    function clone(o) {
+      return JSON.parse(JSON.stringify(o))
+    }
+
+    show()
+  </script>
+</body>
+</html>

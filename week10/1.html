@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>词法分析</title>
+</head>
+<body>
+  <script>
+    const regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+    const directionary = ['Number', 'Whitespace', 'LineTermiator', '*', '/', '+', '-']
+
+    function* tokenize(source) {
+      let result = null
+      let lastIndex = 0
+      
+      while(true) {
+        lastIndex = regexp.lastIndex
+        console.log(lastIndex)
+        result = regexp.exec(source)
+
+        if (!result) {
+          break
+        }
+
+        if (regexp.lastIndex - lastIndex > result[0].length) {
+          break
+        }
+
+        let token = {
+          type: null,
+          value: null
+        }
+
+        for (let i = 1; i <= directionary.length; i++) {
+          if (result[i]) {
+            token.type = directionary[i - 1]
+          }
+        }
+
+        token.value = result[0]
+
+        yield token
+      }
+
+      yield {
+        type: 'EOF'
+      }
+    }
+
+    for (const token of tokenize('100 * 100 + 200')) {
+      console.log(token)
+    }
+  </script>
+</body>
+</html>

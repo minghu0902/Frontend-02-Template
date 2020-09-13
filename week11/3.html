@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模仿reactive实现原理(二)</title>
+</head>
+<body>
+  <script>
+
+    let callbacks = []
+    function effect(callback) {
+      callbacks.push(callback)
+    }
+
+    function reactive(obj) {
+      return new Proxy(obj, {
+        get(target, prop) {
+          console.log(target, prop)
+          return target[prop]
+        },
+        set(target, prop, value) {
+          console.log(target, prop, value)
+          target[prop] = value
+
+          for (const callback of callbacks) {
+            callback()
+          }
+        }
+      })
+    }
+
+    let obj = {
+      a: 1
+    }
+
+    let proxy = reactive(obj)
+
+    effect(() => {
+      console.log(proxy)
+    })
+
+  </script>
+</body>
+</html>

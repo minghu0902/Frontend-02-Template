@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>proxy基本用法</title>
+</head>
+<body>
+  <script>
+    let obj = {
+      a: 1
+    }
+
+    let proxy = new Proxy(obj, {
+      get(target, prop, recilver) {
+        console.log(target, prop, recilver, recilver === proxy)
+        return 2
+      },
+      set(target, prop, value, recilver) {
+        console.log(target, prop, value, recilver)
+        target[prop] = value
+        return true
+      },
+      deleteProperty(target, prop) {
+        console.log(target, prop)
+        delete target[prop]
+        return true
+      }
+    })
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reactivity响应式对象</title>
+  <style>
+    #color {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <input type="range" id="r" min="0" max="255">
+  <input type="range" id="g" min="0" max="255">
+  <input type="range" id="b" min="0" max="255">
+  <div id="color"></div>
+  <script>
+    let callbacks = new Map()
+    let reactivities = new Map()
+    let useReactivities = []
+
+    function effect(callback) {
+      useReactivities = []
+      callback()
+
+      for (const reactivity of useReactivities) {
+        if (!callbacks.has(reactivity[0])) {
+          callbacks.set(reactivity[0], new Map())
+        }
+        if (!callbacks.get(reactivity[0]).has(reactivity[1])) {
+          callbacks.get(reactivity[0]).set(reactivity[1], [])
+        }
+        callbacks.get(reactivity[0]).get(reactivity[1]).push(callback)
+      }
+    }
+
+    function reactive(obj) {
+      if (reactivities.has(obj)) {
+        return reactivities.get(obj)
+      }
+
+      let proxy = new Proxy(obj, {
+        get(target, prop) {
+          console.log(target, prop)
+          useReactivities.push([target, prop])
+          if (typeof target[prop] === 'object' && target[prop] !== null) {
+            return reactive(target[prop])
+          }
+          return target[prop]
+        },
+        set(target, prop, value) {
+          console.log(target, prop, value)
+          target[prop] = value
+
+          if (callbacks.get(target)) {
+            if (callbacks.get(target).get(prop)) {
+              for (const callback of callbacks.get(target).get(prop)) {
+                callback()
+              }
+            }
+          }
+        }
+      })
+
+      reactivities.set(obj, proxy)
+      return proxy
+    }
+
+    const r = document.getElementById('r')
+    const g = document.getElementById('g')
+    const b = document.getElementById('b')
+    const colorBox = document.getElementById('color')
+
+    let color = reactive({
+      r: 0,
+      g: 0,
+      b: 0
+    })
+
+    effect(() => {
+      r.value = color.r
+      g.value = color.g
+      b.value = color.b
+      colorBox.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`
+    })
+
+
+    r.addEventListener('input', (e) => color.r = e.target.value)
+    g.addEventListener('input', (e) => color.g = e.target.value)
+    b.addEventListener('input', (e) => color.b = e.target.value)
+    
+  </script>
+</body>
+</html>

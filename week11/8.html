@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正常流里的拖拽</title>
+  <style>
+    #dragable {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      background-color: pink;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+  </div>
+  <div id="dragable"></div>
+  <script>
+    const oDragable = document.getElementById('dragable')
+    const oContainer = document.getElementById('container')
+
+    // 记录元素的起始偏移量
+    let baseX = 0, baseY = 0
+
+    oDragable.addEventListener('mousedown', (event) => {
+
+      // 记录鼠标的起始位置
+      const startX = event.clientX
+      const startY = event.clientY
+
+      const move = (event) => {
+        const range = getNearest(event.clientX, event.clientY)
+        range.insertNode(oDragable)
+      }
+
+      const up = (event) => {
+        // 计算并保存当次拖拽结束后，元素的偏移量
+        baseX += event.clientX - startX
+        baseY += event.clientY - startY
+        document.removeEventListener('mousemove', move)
+        document.removeEventListener('mouseup', up)
+      }
+
+      document.addEventListener('mousemove', move)
+      document.addEventListener('mouseup', up)
+    })
+
+
+    const childNodes = oContainer.childNodes
+    let ranges = []
+
+    for (let i = 0; i < childNodes[0].textContent.length; i++) {
+      const range = document.createRange()
+      range.setStart(childNodes[0], i)
+      range.setEnd(childNodes[0], i)
+      ranges.push(range)
+    }
+
+    function getNearest(x, y) {
+      let min = Infinity
+      let nearest = null
+
+      for (const range of ranges) {
+        const rect = range.getBoundingClientRect()
+        const distance = (rect.x - x) ** 2 + (rect.y - y) ** 2
+
+        if (distance < min) {
+          min = distance
+          nearest = range
+        }
+      }
+
+      return nearest
+    }
+    
+    document.addEventListener('selectstart', (event) => {
+      event.preventDefault()
+    })
+  </script>
+</body>
+</html>

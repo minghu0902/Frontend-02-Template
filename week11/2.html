@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模仿reactive实现原理(一)</title>
+</head>
+<body>
+  <script>
+
+    function reactive(obj) {
+      return new Proxy(obj, {
+        get(target, prop) {
+          console.log(target, prop)
+          return target[prop]
+        },
+        set(target, prop, value) {
+          console.log(target, prop, value)
+          target[prop] = value
+        }
+      })
+    }
+
+    let obj = {
+      a: 1
+    }
+
+    let proxy = reactive(obj)
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>range api</title>
+</head>
+
+<body>
+  <p>
+    <p> text text text text text text text text text text text text text text text text text text text text text text text</p>
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text text text text text text text text text text text text text text text text text text text text text text
+    text text
+  </p>
+  <input type="button" value="获取选中范围" onclick="showRange()">
+  <div id="showRange"></div>
+</body>
+<script>
+
+  function showRange () {
+    const selection = document.getSelection()
+    const rangeCount = selection.rangeCount
+
+    for (let i = 0; i < rangeCount; i++) {
+      const range = selection.getRangeAt(i)
+      console.log(range)
+      console.log(range.cloneContents())
+      // console.log(range.deleteContents())
+    }
+  }
+
+</script>
+</html>

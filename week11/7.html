@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>基本拖拽</title>
+  <style>
+    #dragable {
+      width: 100px;
+      height: 100px;
+      background-color: pink;
+    }
+  </style>
+</head>
+<body>
+  <div id="dragable"></div>
+  <script>
+    const oDragable = document.getElementById('dragable')
+
+    // 记录元素的起始偏移量
+    let baseX = 0, baseY = 0
+
+    oDragable.addEventListener('mousedown', (event) => {
+
+      // 记录鼠标的起始位置
+      const startX = event.clientX
+      const startY = event.clientY
+
+      const move = (event) => {
+        // 计算元素偏移量
+        const x = baseX + event.clientX - startX
+        const y = baseY + event.clientY - startY
+        oDragable.style.transform = `translate(${x}px, ${y}px)`
+      }
+
+      const up = (event) => {
+        // 计算并保存当次拖拽结束后，元素的偏移量
+        baseX += event.clientX - startX
+        baseY += event.clientY - startY
+        document.removeEventListener('mousemove', move)
+        document.removeEventListener('mouseup', up)
+      }
+
+      document.addEventListener('mousemove', move)
+      document.addEventListener('mouseup', up)
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<script type="module">
+  import { enableGesture } from './gesture.js'
+  enableGesture(document.documentElement)
+
+  document.documentElement.addEventListener('tap', (event) => {
+    console.log('tap event trigger', event)
+  })
+  document.documentElement.addEventListener('pressstart', (event) => {
+    console.log('pressstart event trigger', event)
+  })
+  document.documentElement.addEventListener('pressend', (event) => {
+    console.log('pressend event trigger', event)
+  })
+  document.documentElement.addEventListener('panstart', (event) => {
+    console.log('panstart event trigger', event)
+  })
+  document.documentElement.addEventListener('pan', (event) => {
+    console.log('pan event trigger', event)
+  })
+  document.documentElement.addEventListener('panend', (event) => {
+    console.log('panend event trigger', event)
+  })
+  document.documentElement.addEventListener('flick', (event) => {
+    console.log('flick event trigger', event)
+  })
+</script>

@@ -5,13 +5,12 @@
 ### yeoman
 yeoman是一个通用的脚手架生成工具
 
-##### 创建项目
-  * 初始化
+##### 初始化项目
     1. npm init (package.json文件中，name属性必须以 generator- 作为前缀)
     2. npm install --save yeoman-generator
     3. 创建文件目录 (生成器的文件必须放在 generators 目录下，否则需要在 package.json 文件中的 files 属性中指定)
 
-##### GENERATOR RUNTIME CONTEXT
+##### Generator runtime context
   * 每次调用生成器时，都会运行添加到原型中的每个方法——而且通常是按顺序运行的
   * 辅助方法和私有方法不会自动运行，主要包括以下3中
     1. 以下划线开头的方法
